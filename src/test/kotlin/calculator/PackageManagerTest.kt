@@ -115,6 +115,123 @@ class PackageManagerTest {
     }
 
     @Test
+    fun `given a set of package with invalid data and base cost return package list with no discount calculated`() {
+        // Given
+        val packageList = mutableListOf(
+            PackageModel(
+                packageId = "PKG3",
+                packageWeight = 0,
+                packageDistance = 0,
+                offerCode = "OFR003"
+            )
+        )
+        val baseCost = 0
+
+        every {
+            offerValidator.validateOfferCodeApplied(
+                packageModel = any(),
+                offerList = any(),
+            )
+        } answers {
+            OfferModel.emptyValue
+        }
+
+        every {
+            costCalculator.calculateBaseCost(any(), any())
+        } answers {
+            Pair(0, 0)
+        }
+
+        val result = _underTest.checkOfferAndCalculateTotal(packageList, baseCost, offerList)
+
+        // Then
+        val expected = listOf(
+            PackageModel(
+                packageId = "PKG3",
+                packageWeight = 0,
+                packageDistance = 0,
+                offerCode = "OFR003",
+                offerApplied = OfferModel.emptyValue,
+                totalDiscount = 0,
+                totalCost = 0,
+            )
+        )
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `given a set of empty package list should return empty package list`() {
+        // Given
+        val packageList: MutableList<PackageModel> = mutableListOf()
+        val baseCost = 0
+
+        every {
+            offerValidator.validateOfferCodeApplied(
+                packageModel = any(),
+                offerList = any(),
+            )
+        } answers {
+            OfferModel.emptyValue
+        }
+
+        every {
+            costCalculator.calculateBaseCost(any(), any())
+        } answers {
+            Pair(0, 0)
+        }
+
+        val result = _underTest.checkOfferAndCalculateTotal(packageList, baseCost, offerList)
+
+        // Then
+        val expected: List<PackageModel> = listOf()
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `given a set of package with invalid offer and base cost return package list with no discount calculated`() {
+        // Given
+        val packageList = mutableListOf(
+            PackageModel(
+                packageId = "PKG3",
+                packageWeight = 10,
+                packageDistance = 100,
+                offerCode = "NA"
+            ),
+        )
+        val baseCost = 100
+
+        every {
+            offerValidator.validateOfferCodeApplied(
+                packageModel = any(),
+                offerList = any(),
+            )
+        } answers {
+            OfferModel.emptyValue
+        }
+
+        every {
+            costCalculator.calculateBaseCost(any(), any())
+        } answers {
+            Pair(700, 0)
+        }
+
+        val result = _underTest.checkOfferAndCalculateTotal(packageList, baseCost, offerList)
+
+        // Then
+        val expected = listOf(
+            PackageModel(
+                packageId = "PKG3",
+                packageWeight = 10,
+                packageDistance = 100,
+                offerCode = "NA",
+                totalDiscount = 0,
+                totalCost = 700,
+            )
+        )
+        assertEquals(expected, result)
+    }
+
+    @Test
     fun `given a set of package list and a weight limit return matched package list`() {
         // Given
         val packageList = mutableListOf(
@@ -163,6 +280,81 @@ class PackageManagerTest {
                 PackageModel(
                     packageId = "PKG4",
                     packageWeight = 110,
+                    packageDistance = 60,
+                )
+            )
+        )
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `given a set of empty package list return empty weight matched list`() {
+        // Given
+        val packageList: MutableList<PackageModel> = mutableListOf()
+        val weightLimit = 200
+
+        every {
+            weightMatcher.weightMatcher(any(), any())
+        } answers {
+            listOf()
+        }
+
+        val result = _underTest.matchPackageMaximizeWeight(packageList, weightLimit)
+
+        // Then
+        val expected: List<List<PackageModel>> = listOf()
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `given a set of invalid weight package list return a matched list with single value`() {
+        // Given
+        val packageList = mutableListOf(
+            PackageModel(
+                packageId = "PKG2",
+                packageWeight = 0,
+                packageDistance = 125,
+            ),
+            PackageModel(
+                packageId = "PKG4",
+                packageWeight = 0,
+                packageDistance = 60,
+            ),
+        )
+        val weightLimit = 200
+
+        every {
+            weightMatcher.weightMatcher(any(), any())
+        } answers {
+            listOf(
+                listOf(
+                    PackageModel(
+                        packageId = "PKG2",
+                        packageWeight = 0,
+                        packageDistance = 125,
+                    ),
+                    PackageModel(
+                        packageId = "PKG4",
+                        packageWeight = 0,
+                        packageDistance = 60,
+                    )
+                )
+            )
+        }
+
+        val result = _underTest.matchPackageMaximizeWeight(packageList, weightLimit)
+
+        // Then
+        val expected: List<List<PackageModel>> = listOf(
+            listOf(
+                PackageModel(
+                    packageId = "PKG2",
+                    packageWeight = 0,
+                    packageDistance = 125,
+                ),
+                PackageModel(
+                    packageId = "PKG4",
+                    packageWeight = 0,
                     packageDistance = 60,
                 )
             )
@@ -250,6 +442,28 @@ class PackageManagerTest {
                 deliveryTime = 0.85,
             ),
         )
+        assertEquals(expected, result)
+    }
+
+    @Test
+    fun `given a set of empty package list, speed limit and fleet number return empty package list`() {
+        // Given
+        val packageList: List<List<PackageModel>> = listOf(
+            listOf(),
+        )
+        val speedLimit = 70
+        val numberOfFleet = 2
+
+        every {
+            timeEstimation.calculateTimeRequired(any(), any(), any())
+        } answers {
+            listOf()
+        }
+
+        val result = _underTest.calculateTimeRequiredForEachPackage(packageList, speedLimit, numberOfFleet)
+
+        // Then
+        val expected: List<PackageModel> = listOf()
         assertEquals(expected, result)
     }
 }

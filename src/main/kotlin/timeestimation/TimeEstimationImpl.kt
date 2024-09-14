@@ -16,24 +16,40 @@ class TimeEstimationImpl : TimeEstimation {
         val resultPackage: MutableList<PackageModel> = mutableListOf()
 
         while (mutableMatchedPackage.isNotEmpty()) {
-            fleetArray.sort()
-            val initialDeliveryTime = fleetArray.first()
-            var longestDeliveryTime = 0.0
+            if(fleetArray.isNotEmpty()) {
+                fleetArray.sort()
+                val initialDeliveryTime = fleetArray.first()
+                var longestDeliveryTime = 0.0
 
-            matchedPackage[tempCount].forEach { packageItem ->
-                val deliveryTime = BigDecimal(packageItem.packageDistance.toDouble() / speedLimit.toDouble()).setScale(2, RoundingMode.FLOOR).toDouble()
+                matchedPackage[tempCount].forEach { packageItem ->
+                    if(speedLimit != 0) {
+                        val deliveryTime = BigDecimal(packageItem.packageDistance.toDouble() / speedLimit.toDouble()).setScale(2, RoundingMode.FLOOR).toDouble()
 
-                resultPackage.add(
-                    packageItem.copy(
-                        deliveryTime = initialDeliveryTime + deliveryTime
+                        resultPackage.add(
+                            packageItem.copy(
+                                deliveryTime = initialDeliveryTime + deliveryTime
+                            )
+                        )
+
+                        if(longestDeliveryTime < deliveryTime) {
+                            longestDeliveryTime = deliveryTime
+                        }
+                    } else {
+                        resultPackage.add(
+                            packageItem.copy(
+                                deliveryTime = 0.0
+                            )
+                        )
+                    }
+                }
+                fleetArray[0] = fleetArray[0] + (longestDeliveryTime * 2)
+            } else {
+                matchedPackage[tempCount].forEach { packageItem ->
+                    resultPackage.add(
+                        packageItem
                     )
-                )
-
-                if(longestDeliveryTime < deliveryTime) {
-                    longestDeliveryTime = deliveryTime
                 }
             }
-            fleetArray[0] = fleetArray[0] + (longestDeliveryTime * 2)
             mutableMatchedPackage.remove(matchedPackage[tempCount])
             tempCount++
         }

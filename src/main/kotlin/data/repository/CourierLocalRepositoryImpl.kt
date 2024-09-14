@@ -1,9 +1,12 @@
 package org.example.data.repository
 
 import org.example.data.model.OfferModel
+import org.example.database.offer.OfferDatabase
 import org.example.domain.repository.CourierLocalRepository
 
-class CourierLocalRepositoryImpl : CourierLocalRepository {
+class CourierLocalRepositoryImpl(
+    private val offerDatabase: OfferDatabase
+) : CourierLocalRepository {
     override fun getOffers(): List<OfferModel> {
         return listOf(
             OfferModel(
@@ -31,5 +34,21 @@ class CourierLocalRepositoryImpl : CourierLocalRepository {
                 offerDiscountPercentage = 5,
             ),
         )
+    }
+
+    override fun getOffersFromDb(): List<OfferModel> {
+        return offerDatabase.getOffer()
+    }
+
+    override fun insertOfferToDb(offerModel: OfferModel): Boolean {
+        return offerDatabase.insertOffer(offerModel)
+    }
+
+    override fun removeOfferFromDb(offerId: String): Boolean {
+        return offerDatabase.deleteOffer(offerId)
+    }
+
+    override fun checkOfferTable() {
+        offerDatabase.createOfferTable()
     }
 }

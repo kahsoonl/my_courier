@@ -30,5 +30,20 @@ fun ErrorView(
                 CourierUserIntent.UserInputFleetInfo(userInput)
             )
         }
+        UserInputType.MENU_SELECTION -> {
+            userIntent.invoke(
+                CourierUserIntent.UserInputMenuSelection(userInput)
+            )
+        }
+        UserInputType.OFFER_MENU_SELECTION -> {
+            userIntent.invoke(
+                CourierUserIntent.UserInputOfferMenu(userInput)
+            )
+        }
+        UserInputType.OFFER_INFO -> {
+            userIntent.invoke(
+                CourierUserIntent.UserInputAddOffer(userInput)
+            )
+        }
     }
 }

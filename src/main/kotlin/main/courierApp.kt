@@ -15,6 +15,17 @@ fun courierApp(
 
     when (viewState) {
         is CourierViewState.InitialState -> {
+            MenuView(
+                userIntent = onUserAction()
+            )
+        }
+        is CourierViewState.ManagePromoState -> {
+            ManageOfferView(
+                viewState = viewState,
+                userIntent = onUserAction()
+            )
+        }
+        is CourierViewState.CostAndPackageState -> {
             CostAndPackageView(
                 userIntent = onUserAction()
             )
@@ -23,7 +34,6 @@ fun courierApp(
             PackageInfoView(
                 userIntent = onUserAction()
             )
-            //onUserAction().invoke(CourierUserIntent.ShowFleetEntry)
         }
         is CourierViewState.FleetInfoState -> {
             FleetView(
@@ -38,6 +48,18 @@ fun courierApp(
         }
         is CourierViewState.ErrorState -> {
             ErrorView(
+                viewState = viewState,
+                userIntent = onUserAction(),
+            )
+        }
+        is CourierViewState.AddOffer -> {
+            AddOfferView(
+                viewState = viewState,
+                userIntent = onUserAction(),
+            )
+        }
+        is CourierViewState.DeleteOffer -> {
+            DeleteOfferView(
                 viewState = viewState,
                 userIntent = onUserAction(),
             )

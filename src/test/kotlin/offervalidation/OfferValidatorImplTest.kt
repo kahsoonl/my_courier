@@ -156,4 +156,51 @@ class OfferValidatorImplTest {
         val expectedResult = OfferModel.emptyValue
         assertEquals(expectedResult, result)
     }
+
+    @Test
+    fun `given empty package returned result should be an empty offer`() {
+        // Given
+        val packageModel = PackageModel(
+            packageId = "",
+            packageWeight = 0,
+            packageDistance = 0,
+            offerCode = ""
+        )
+        val offerList = listOf(
+            OfferModel(
+                offerId = "OFR001",
+                offerMinDistance = 0,
+                offerMaxDistance = 200,
+                offerMinWeight = 70,
+                offerMaxWeight = 200,
+                offerDiscountPercentage = 10,
+            ),
+            OfferModel(
+                offerId = "OFR002",
+                offerMinDistance = 50,
+                offerMaxDistance = 150,
+                offerMinWeight = 100,
+                offerMaxWeight = 250,
+                offerDiscountPercentage = 7,
+            ),
+            OfferModel(
+                offerId = "OFR003",
+                offerMinDistance = 50,
+                offerMaxDistance = 250,
+                offerMinWeight = 10,
+                offerMaxWeight = 150,
+                offerDiscountPercentage = 5,
+            )
+        )
+
+        // When
+        val result = _underTest.validateOfferCodeApplied(
+            packageModel = packageModel,
+            offerList = offerList
+        )
+
+        // Then
+        val expectedResult = OfferModel.emptyValue
+        assertEquals(expectedResult, result)
+    }
 }

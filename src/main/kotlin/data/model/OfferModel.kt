@@ -13,4 +13,16 @@ data class OfferModel(
     companion object {
         val emptyValue = OfferModel()
     }
+
+    override fun toString(): String {
+        return String.format(
+            "%s %d %d %d %d %d",
+            offerId,
+            offerMinDistance,
+            offerMaxDistance,
+            offerMinWeight,
+            offerMaxWeight,
+            offerDiscountPercentage,
+        )
+    }
 }

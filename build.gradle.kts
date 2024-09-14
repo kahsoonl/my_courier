@@ -17,6 +17,7 @@ dependencies {
     implementation(platform("io.insert-koin:koin-bom:4.0.0-RC2"))
     implementation("io.insert-koin:koin-core")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC.2")
+    implementation("org.xerial:sqlite-jdbc:3.41.2.2")
 }
 
 tasks.test {

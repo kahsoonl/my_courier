@@ -17,7 +17,7 @@ class CourierUseCaseImpl(
         val listWithTotalCost = packageManager.checkOfferAndCalculateTotal(
             packageList = orderModel.packageList,
             baseCost = orderModel.baseCost,
-            offerList = courierRepository.getOffers(),
+            offerList = courierRepository.getOffersFromDb(),
         )
 
         val matchedPackage = packageManager.matchPackageMaximizeWeight(
@@ -43,4 +43,14 @@ class CourierUseCaseImpl(
             }
         )
     }
+
+    override fun getOfferFromLocal(): List<OfferModel> {
+        courierRepository.checkOfferTable()
+        val offerList = courierRepository.getOffersFromDb()
+        return offerList
+    }
+
+    override fun addOfferToLocal(offerModel: OfferModel): Boolean = courierRepository.insertOfferToDb(offerModel)
+
+    override fun deleteOffer(offerId: String): Boolean = courierRepository.removeOfferFromDb(offerId)
 }
